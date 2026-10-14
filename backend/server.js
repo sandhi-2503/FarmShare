@@ -326,8 +326,21 @@ app.use('/api/notifications', notificationRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`🚀 [FarmShare AI Server] running on http://localhost:${PORT}`);
+const PORT = Number(process.env.PORT) || 5000;
+
+const server = app.listen(PORT, "0.0.0.0", () => {
+  console.log(`[FarmShare AI Server] listening on port ${PORT}`);
+});
+
+server.on("error", (err) => {
+  console.error("[Server] Failed to start:", err);
+
+  if (err.code === "EADDRINUSE") {
+    console.error(
+      `[Server] Port ${PORT} is already in use. Stop the other process or use a different PORT.`
+    );
+  }
+
+  process.exit(1);
 });
